@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+
+import { useAuth } from '../hooks/useAuth';
 import axiosInstance from '../services/axiosService';
 import Item from './Item';
 import {debounce} from 'lodash';
@@ -16,6 +18,7 @@ export interface Company {
     is_verified: boolean;
 }
 export default function Data() {
+    const token = useAuth();
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [page, setPage] = useState(1);
@@ -24,11 +27,12 @@ export default function Data() {
 
     const fetchData = async () => {
         try {
-            const token = localStorage.getItem('token');
+            if (!token) return;
             const config = {
                 headers: { Authorization: `Bearer ${token}` }
             };
             const response = await axiosInstance.get('companies/', config);
+            console.log(response.data);         
             setData(response.data);
             setFilteredData(response.data);
         } catch (error) {
@@ -38,7 +42,7 @@ export default function Data() {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [token]);
 
     const debouncedSearch = useMemo(() => debounce((value: any) => {
         setSearch(value);
@@ -103,7 +107,7 @@ export default function Data() {
                             <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort('email')}>Email</th>
                             <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort('incorporation')}>Incorporation</th>
                             <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort('address')}>Address</th>
-                            <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort('revenue')}>Revenue</th>
+                            <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort('revenue')}>Revenue(miilion)</th>
                             <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort('website')}>Website</th>
                             <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort('is_verified')}>Verified</th>
                         </tr>
