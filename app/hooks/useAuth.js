@@ -16,17 +16,17 @@ export const useAuth = () => {
 
             if (currentTime >= expiryTime) {
                 localStorage.removeItem('token');
-                router.push('/login');
+                router.push('/');
             } else {
                 setToken(token);
                 const timeout = expiryTime - currentTime;
                 setTimeout(() => {
                     localStorage.removeItem('token');
-                    router.push('/login');
+                    router.push('/');
                 }, timeout);
             }
         } else {
-            router.push('/login');
+            router.push('/');
         }
     }, [router]);
 
